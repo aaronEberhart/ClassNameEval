@@ -1,13 +1,19 @@
 
 
+import java.io.File;
+
 import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 public class ClassNameEval {
 	
 	public static void main(String[] args) {
-		OWLOntologyManager man = OWLManager.createOWLOntologyManager();
-		System.out.println(man.getOntologies().size()+" YAY");
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		try {
+			OWLOntology ontology = manager.loadOntologyFromOntologyDocument(new File("ComputationalEnvironment_modified.owl"));
+			System.out.println(ontology.toString());
+		}catch(Exception e) {}
 	}
 	
 }
