@@ -11,7 +11,7 @@ public class ClassNameEval {
 	public static void main(String[] args) {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		try {
-			OWLOntology ontology = manager.loadOntologyFromOntologyDocument(new File("ComputationalEnvironment_modified.owl"));
+			OWLOntology ontology = manager.loadOntologyFromOntologyDocument(new File("OWLs/ComputationalEnvironment_modified.owl"));
 			System.out.println(ontology.toString());
 		}catch(Exception e) {}
 	}
