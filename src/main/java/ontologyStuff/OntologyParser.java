@@ -12,6 +12,17 @@ public class OntologyParser{
 		ontology = o;
 	}
 	
+	public OntologyParser(String filename) {
+		ontology = new Ontology(filename);
+	}
 	
+	public void switchOntologyFile(Ontology o) {
+		ontology = o;
+	}
+	
+	public void switchOntologyFile(String filename) {
+		ontology = new Ontology(filename);
+	}
+
 	
 }
