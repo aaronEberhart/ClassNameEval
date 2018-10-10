@@ -50,40 +50,40 @@ public class Ontology {
 		}catch(Exception e) {System.out.println(e);}
 	}
 	
-	public List<OWLClass> getClasses(){
+	protected List<OWLClass> getClasses(){
 		return asList(this.ontology.classesInSignature());
 	}
 	
-	public List<OWLDatatype> getDatatypes(){
+	protected List<OWLDatatype> getDatatypes(){
 		return asList(this.ontology.datatypesInSignature());
 	}
 	
-	public List<OWLObjectProperty> getObjectProperties(){
+	protected List<OWLObjectProperty> getObjectProperties(){
 		return asList(this.ontology.objectPropertiesInSignature());
 	}
 	
-	public List<OWLDataProperty> getDataProperties(){
+	protected List<OWLDataProperty> getDataProperties(){
 		return asList(this.ontology.dataPropertiesInSignature());
 	}
 	
-	public List<OWLAxiom> getAxioms(){
+	protected List<OWLAxiom> getAxioms(){
 		return asList(this.ontology.axioms());
 	}
 	
-	public List<OWLSubClassOfAxiom> getSubClassAxioms(){
+	protected List<OWLSubClassOfAxiom> getSubClassAxioms(){
 		return asList(this.ontology.axioms(AxiomType.SUBCLASS_OF));
 	}
 	
-	public List<OWLObjectPropertyAxiom> getAxiomsRelatedToObjProp(OWLObjectProperty op){
+	protected List<OWLObjectPropertyAxiom> getAxiomsRelatedToObjProp(OWLObjectProperty op){
 		return asList(this.ontology.axioms(op));
 	}
 	
-	public List<OWLDataPropertyAxiom> getAxiomsRelatedToDataProp(OWLDataProperty dp){
+	protected List<OWLDataPropertyAxiom> getAxiomsRelatedToDataProp(OWLDataProperty dp){
 		return asList(this.ontology.axioms(dp));
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static <T> List<T> asList(Stream<T> s){
+	protected static <T> List<T> asList(Stream<T> s){
 		return (List<T>) s.collect(Collectors.toList());
 	}
 }
