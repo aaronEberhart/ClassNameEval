@@ -8,7 +8,7 @@ import ontologyStuff.*;
 public class ClassNameEval {
 	
 	public static void main(String[] args) {
-		Ontology onto = new Ontology("OWLs/cree.owl");
+		Ontology onto = new Ontology("OWLs/ComputationalEnvironment_modified_.owl");
 		OntologyParser parser = new OntologyParser(onto);
 		List<List<String>> s;
 		do {
