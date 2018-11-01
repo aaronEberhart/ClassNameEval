@@ -22,7 +22,7 @@ public class Ontology {
 		
 		manager.setOntologyLoaderConfiguration(manager.getOntologyLoaderConfiguration().setMissingImportHandlingStrategy(MissingImportHandlingStrategy.SILENT));
 			
-		file = new File("OWLs/ComputationalEnvironment_modified.owl");
+		file = new File(filename);
 		iri = IRI.create(file.toURI());
 			
 		try{	
@@ -70,6 +70,15 @@ public class Ontology {
 		return asList(this.ontology.axioms());
 	}
 	
+	protected List<OWLClassAssertionAxiom> getClassAssertionAxioms(OWLIndividual in){
+		return asList(this.ontology.classAssertionAxioms(in));
+	}
+	
+	protected List<OWLNamedIndividual> getIndividuals(){
+		List<OWLNamedIndividual> list = asList(this.ontology.individualsInSignature());
+		return list;
+	}
+	
 	protected List<OWLSubClassOfAxiom> getSubClassAxioms(){
 		return asList(this.ontology.axioms(AxiomType.SUBCLASS_OF));
 	}
@@ -83,7 +92,7 @@ public class Ontology {
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected static <T> List<T> asList(Stream<T> s){
+	private static <T> List<T> asList(Stream<T> s){
 		return (List<T>) s.collect(Collectors.toList());
 	}
 }
