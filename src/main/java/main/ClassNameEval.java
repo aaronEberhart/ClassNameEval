@@ -1,14 +1,16 @@
 package main;
 
 import java.io.*;
-import java.util.List;
+import java.util.*;
 
 import ontologyStuff.*;
+import util.TextFileOntologySplicer;
 
 public class ClassNameEval {
 	
 	public static void main(String[] args) {
-		Ontology onto = new Ontology("OWLs/ComputationalEnvironment_modified_.owl");
+		TextFileOntologySplicer fileOnt = new TextFileOntologySplicer("OWLs/answers.txt","OWLs/ComputationalEnvironment_modified_.owl");
+		Ontology onto = fileOnt.getOntology();
 		OntologyParser parser = new OntologyParser(onto);
 		List<List<String>> s;
 		do {

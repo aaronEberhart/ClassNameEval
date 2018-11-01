@@ -65,7 +65,6 @@ public class OntologyParser{
 	public void switchOntologyFile(Ontology o) {
 		ontology = o;
 		pairs = new Pair(ontology.getClasses(),ontology.getIndividuals());
-		System.out.println("");
 	}
 	
 	public void switchOntologyFile(String filename) {
