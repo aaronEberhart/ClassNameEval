@@ -111,6 +111,7 @@ public class TextFileOntologySplicer {
 		Duple<String,ArrayList<Duple<String,Integer>>> all = new Duple<String,ArrayList<Duple<String,Integer>>>();
 		Duple<String,ArrayList<Duple<String,Integer>>> typeCounts;
 		ArrayList<Duple<String,Integer>> counts;
+		Duple<String,Integer> add;
 		int index,allIndex;
 		all.x = "all";
 		all.y = new ArrayList<Duple<String,Integer>>();
@@ -120,12 +121,13 @@ public class TextFileOntologySplicer {
 			typeCounts = new Duple<String,ArrayList<Duple<String,Integer>>>();
 			typeCounts.y = new ArrayList<Duple<String,Integer>>();
 			typeCounts.x = type.x;
+			stats.add(typeCounts);
 			
 			for(ArrayList<String[]> entries : type.y) {
 				for(String[] pair : entries) {
 					index = index(pair[0],typeCounts.y);
 					if(index == -1) {
-						Duple<String,Integer> add = new Duple<String,Integer>();
+						add = new Duple<String,Integer>();
 						add.x = pair[0];
 						add.y = 1;
 						typeCounts.y.add(add);
@@ -134,7 +136,7 @@ public class TextFileOntologySplicer {
 					}
 					allIndex = index(pair[0],all.y);
 					if(allIndex == -1) {
-						Duple<String,Integer> add = new Duple<String,Integer>();
+						add = new Duple<String,Integer>();
 						add.x = pair[0];
 						add.y = 1;
 						all.y.add(add);
@@ -143,10 +145,8 @@ public class TextFileOntologySplicer {
 					}
 				}
 			}
-			
-			stats.add(typeCounts);
 		}
-		Duple<String,Integer> add;
+		
 		for(Duple<String,ArrayList<Duple<String,Integer>>> type : stats) {
 			if(type.x.equals("all"))continue;
 			for(Duple<String,Integer> allStatEntry : stats.get(0).y) {
@@ -191,6 +191,7 @@ public class TextFileOntologySplicer {
 			}
 			
 			writer.close();
+			
 		}catch(Exception e) {e.printStackTrace();}
 	}
 	
