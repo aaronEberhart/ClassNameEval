@@ -12,6 +12,7 @@ public class TextFileOntologySplicer {
 	private ArrayList<Duple<String,ArrayList<ArrayList<String[]>>>> fileData;
 	private ArrayList<Duple<String,ArrayList<Duple<String,Integer>>>> stats;
 	
+	@SuppressWarnings("unused")
 	private class Duple<X,Y>{
 		public X x;
 		public Y y;
@@ -30,16 +31,21 @@ public class TextFileOntologySplicer {
 		
 		loadStats();
 		
+		outputStats();
+		
 		addDataToOntology();
 	}
-	
+
 
 	public TextFileOntologySplicer(String filename, Ontology o) {
 		
 		ontology = o;
 		
 		readFile(filename);
+		
 		loadStats();
+		
+		outputStats();
 		
 		addDataToOntology();
 	}
@@ -95,23 +101,90 @@ public class TextFileOntologySplicer {
 	}
 	
 	private void addDataToOntology() {
-		System.out.println(fileData.toString());
+		//System.out.println(fileData.toString());
 	}
 	
 
 	private void loadStats() {
+		stats = new ArrayList<Duple<String,ArrayList<Duple<String,Integer>>>>();
+		
 		Duple<String,ArrayList<Duple<String,Integer>>> all = new Duple<String,ArrayList<Duple<String,Integer>>>();
+		Duple<String,ArrayList<Duple<String,Integer>>> typeCounts;
+		ArrayList<Duple<String,Integer>> counts;
+		int index,allIndex;
 		all.x = "all";
+		all.y = new ArrayList<Duple<String,Integer>>();
 		stats.add(all);
 		
 		for(Duple<String,ArrayList<ArrayList<String[]>>> type : fileData) {
-			Duple<String,ArrayList<Duple<String,Integer>>> typeCounts = new Duple<String,ArrayList<Duple<String,Integer>>>();
-			ArrayList<Duple<String,Integer>> counts = new ArrayList<Duple<String,Integer>>();
+			typeCounts = new Duple<String,ArrayList<Duple<String,Integer>>>();
+			typeCounts.y = new ArrayList<Duple<String,Integer>>();
 			typeCounts.x = type.x;
-			for(ArrayList<String[]> entry : type.y) {
-				
+			
+			for(ArrayList<String[]> entries : type.y) {
+				for(String[] pair : entries) {
+					index = index(pair[0],typeCounts.y);
+					if(index == -1) {
+						Duple<String,Integer> add = new Duple<String,Integer>();
+						add.x = pair[0];
+						add.y = 1;
+						typeCounts.y.add(add);
+					}else {
+						typeCounts.y.get(index).y++;
+					}
+					allIndex = index(pair[0],all.y);
+					if(allIndex == -1) {
+						Duple<String,Integer> add = new Duple<String,Integer>();
+						add.x = pair[0];
+						add.y = 1;
+						all.y.add(add);
+					}else {
+						all.y.get(allIndex).y++;
+					}
+				}
+			}
+			
+			stats.add(typeCounts);
+		}
+		Duple<String,Integer> add;
+		for(Duple<String,ArrayList<Duple<String,Integer>>> type : stats) {
+			if(type.x.equals("all"))continue;
+			for(Duple<String,Integer> allStatEntry : stats.get(0).y) {
+				if(index(allStatEntry.x,type.y)==-1) {
+					add = new Duple<String,Integer>();
+					add.x = allStatEntry.x;
+					add.y = 0;
+					type.y.add(add);
+				}
 			}
 		}
+	}
+	
+	private int index(String val, ArrayList<Duple<String,Integer>> list) {
+		if(list.isEmpty())return -1;
+		int index = 0;
+		for(Duple<String,Integer> pair : list) {
+			if(pair.x.equals(val))
+				return index;
+			index++;
+		}
+		return -1;
+	}
+	
+	private void outputStats() {
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter("stats.txt"));
+			
+			for(Duple<String,ArrayList<Duple<String,Integer>>> type : stats) {
+				writer.write(type.x+"\n\n");
+				for(Duple<String,Integer> entry : type.y) {
+					writer.write(String.format("%-40s=%25d\n",entry.x,entry.y));
+				}
+				writer.write("\n\n");
+			}
+			
+			writer.close();
+		}catch(Exception e) {e.printStackTrace();}
 	}
 	
 	public Ontology getOntology() {
