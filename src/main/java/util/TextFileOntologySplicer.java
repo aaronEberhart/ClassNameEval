@@ -158,6 +158,13 @@ public class TextFileOntologySplicer {
 				}
 			}
 		}
+		
+		for(Duple<String,ArrayList<Duple<String,Integer>>> type : stats) {
+			Collections.sort( type.y, new Comparator<Duple<String,Integer>>( ){
+				public int compare(Duple<String, Integer> dup1, Duple<String, Integer> dup2) {
+					return dup2.y - dup1.y;
+				}});
+		}
 	}
 	
 	private int index(String val, ArrayList<Duple<String,Integer>> list) {
