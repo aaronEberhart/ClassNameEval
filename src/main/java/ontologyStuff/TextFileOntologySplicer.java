@@ -1,7 +1,9 @@
-package util;
+package ontologyStuff;
 
 import java.io.*;
 import java.util.*;
+
+import org.semanticweb.owlapi.model.*;
 
 import ontologyStuff.*;
 
@@ -11,6 +13,7 @@ public class TextFileOntologySplicer {
 	
 	private ArrayList<Duple<String,ArrayList<ArrayList<String[]>>>> fileData;
 	private ArrayList<Duple<String,ArrayList<Duple<String,Integer>>>> stats;
+	private boolean doneStats = false;
 	
 	@SuppressWarnings("unused")
 	private class Duple<X,Y>{
@@ -23,29 +26,59 @@ public class TextFileOntologySplicer {
 		}
 	}
 	
-	public TextFileOntologySplicer(String textFilename, String ontologyFilename) {
+	@SuppressWarnings("unused")
+	private class Triple<X,Y,Z>{
+		public X x;
+		public Y y;
+		public Z z;
+		public Triple() {}
+		public Triple(X x, Y y, Z z) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+		}
+	}
+	
+	private class Assertion<OWLClass,OWLIndividual> extends Duple<OWLClass,OWLIndividual>{
+		public Assertion(OWLClass c,OWLIndividual i) {
+			super(c,i);
+			makeAssertion();
+		}
+		private void makeAssertion() {
+			AddAxiom add = new AddAxiom(ontology.getOntology(),ontology.getDataFactory()
+					.getOWLClassAssertionAxiom(((OWLClassExpression)x),
+							((org.semanticweb.owlapi.model.OWLIndividual)y)));
+			ontology.getManager().applyChange(add);
+		}
+	}
+	
+	private class Property<OWLDataProperty,OWLIndividual,String> extends Triple<OWLDataProperty,OWLIndividual,String>{
+		public Property(OWLDataProperty d,OWLIndividual i1, String i2) {
+			super(d,i1,i2);
+			makeAssertion();
+		}
+		private void makeAssertion() {
+			AddAxiom add = new AddAxiom(ontology.getOntology(),ontology.getDataFactory()
+					.getOWLDataPropertyAssertionAxiom(((OWLDataPropertyExpression)x),((org.semanticweb.owlapi.model.OWLIndividual)y),(OWLLiteral) z));
+			ontology.getManager().applyChange(add);
+		}
+	}
+	
+	public TextFileOntologySplicer(String textFilename, String ontologyFilename) throws Exception {
 		
 		ontology = new Ontology(ontologyFilename);
 		
 		readFile(textFilename);
 		
-		loadStats();
-		
-		outputStats();
-		
 		addDataToOntology();
 	}
 
 
-	public TextFileOntologySplicer(String filename, Ontology o) {
+	public TextFileOntologySplicer(String filename, Ontology o) throws Exception {
 		
 		ontology = o;
 		
 		readFile(filename);
-		
-		loadStats();
-		
-		outputStats();
 		
 		addDataToOntology();
 	}
@@ -100,10 +133,33 @@ public class TextFileOntologySplicer {
 		} catch (Exception e) {e.printStackTrace();}
 	}
 	
-	private void addDataToOntology() {
-		//System.out.println(fileData.toString());
+	private void addDataToOntology() throws Exception {
+		List<OWLClass> classes = ontology.getClasses();
+		
+		//add all the class assertions
+		int count;
+		String type;
+		String[] iri;
+		OWLIndividual iri1,iri2;
+		for(OWLClass classy : classes) {
+			for(Duple<String,ArrayList<ArrayList<String[]>>> typeEntries : fileData) {
+				count = 1;
+				type = typeEntries.x;
+				for(ArrayList<String[]> entry : typeEntries.y) {
+					iri = classy.toString().split("#");
+					iri1 = ontology.getDataFactory().getOWLNamedIndividual(
+							IRI.create(iri[0].split("<")[1] + "#" + type + count++ + iri[1].split(">")[0]));
+					Assertion<OWLClass,OWLIndividual> a = new Assertion<OWLClass,OWLIndividual>(classy,iri1);
+				}
+			}
+		}
+		for(OWLClass classy : classes) {
+			throw new Exception("FixMe");
+		}
+		try {
+			ontology.getManager().saveOntology(ontology.getOntology());
+		} catch (OWLOntologyStorageException e) {e.printStackTrace();}
 	}
-	
 
 	private void loadStats() {
 		stats = new ArrayList<Duple<String,ArrayList<Duple<String,Integer>>>>();
@@ -193,6 +249,15 @@ public class TextFileOntologySplicer {
 			writer.close();
 			
 		}catch(Exception e) {e.printStackTrace();}
+	}
+	
+	public boolean runStats() {
+		if(!doneStats) {
+			loadStats();
+			outputStats();
+			doneStats = true;
+		}
+		return doneStats;
 	}
 	
 	public Ontology getOntology() {
