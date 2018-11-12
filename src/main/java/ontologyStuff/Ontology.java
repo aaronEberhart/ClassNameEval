@@ -41,6 +41,10 @@ public class Ontology {
 	public OWLDataFactory getDataFactory() {
 		return dataFactory;
 	}
+	
+	public IRI getIRI() {
+		return iri;
+	}
 
 	public void newOntologyFromFile(String filename) {
 		file = new File(filename);
