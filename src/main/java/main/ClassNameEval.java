@@ -15,7 +15,7 @@ public class ClassNameEval {
 		List<List<String>> s;
 		do {
 			s = parser.getStringsFromOneClass();
-			if(s!=null)System.out.println(s.toString());
+			System.out.println(s.toString());
 		}while(s != null);
 			
 		
