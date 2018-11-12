@@ -52,14 +52,14 @@ public class TextFileOntologySplicer {
 		}
 	}
 	
-	private class Property<OWLDataProperty,OWLIndividual,String> extends Triple<OWLDataProperty,OWLIndividual,String>{
-		public Property(OWLDataProperty d,OWLIndividual i1, String i2) {
+	private class Property<OWLDataProperty,OWLIndividual,OWLLiteral> extends Triple<OWLDataProperty,OWLIndividual,OWLLiteral>{
+		public Property(OWLDataProperty d,OWLIndividual i1, OWLLiteral i2) {
 			super(d,i1,i2);
 			makeAssertion();
 		}
 		private void makeAssertion() {
 			AddAxiom add = new AddAxiom(ontology.getOntology(),ontology.getDataFactory()
-					.getOWLDataPropertyAssertionAxiom(((OWLDataPropertyExpression)x),((org.semanticweb.owlapi.model.OWLIndividual)y),(OWLLiteral) z));
+					.getOWLDataPropertyAssertionAxiom(((OWLDataPropertyExpression)x),((org.semanticweb.owlapi.model.OWLIndividual)y),(org.semanticweb.owlapi.model.OWLLiteral) z));
 			ontology.getManager().applyChange(add);
 		}
 	}
@@ -136,30 +136,72 @@ public class TextFileOntologySplicer {
 	private void addDataToOntology() throws Exception {
 		List<OWLClass> classes = ontology.getClasses();
 		
-		//add all the class assertions
 		int count;
 		String type;
 		String[] iri;
-		OWLIndividual iri1,iri2;
+		Duple<OWLClass,String> parts;
+		OWLDataProperty propIRI;
+		OWLIndividual indiv;
+		OWLLiteral literal;
 		for(OWLClass classy : classes) {
 			for(Duple<String,ArrayList<ArrayList<String[]>>> typeEntries : fileData) {
 				count = 1;
-				type = typeEntries.x;
+				type = typeEntries.x.toUpperCase();
 				for(ArrayList<String[]> entry : typeEntries.y) {
-					iri = classy.toString().split("#");
-					iri1 = ontology.getDataFactory().getOWLNamedIndividual(
-							IRI.create(iri[0].split("<")[1] + "#" + type + count++ + iri[1].split(">")[0]));
-					Assertion<OWLClass,OWLIndividual> a = new Assertion<OWLClass,OWLIndividual>(classy,iri1);
+					iri = classy.getIRI().getIRIString().split("#");
+					indiv = ontology.getDataFactory().getOWLNamedIndividual(IRI.create(String.format("%s#%s%02d%s",iri[0],type,count++,iri[1])));
+					new Assertion<OWLClass,OWLIndividual>(classy,indiv);
+					for(String[] property : entry) {
+						parts = matchClassType(property[0]);
+						if(parts.x.equals(classy)) {
+							String res = parts.y;
+							propIRI = ontology.getDataFactory().getOWLDataProperty(IRI.create(String.format("%s#%s",iri[0],res)));
+							literal = ontology.getDataFactory().getOWLLiteral(property[1]);	
+							new Property<OWLDataProperty,OWLIndividual,OWLLiteral>(propIRI,indiv,literal);
+						}
+					}
 				}
 			}
 		}
-//		for(OWLClass classy : classes) {
-//			throw new Exception("FixMe");
-//		}
 		try {
 			ontology.getManager().saveOntology(ontology.getOntology(), IRI.create(ontology.getIRI().getIRIString().split(".owl")[0] + "_appended.owl"));
 
 		} catch (OWLOntologyStorageException e) {e.printStackTrace();}
+	}
+	
+	public Duple<OWLClass,String> matchClassType(String matcher) throws Exception {
+		String[] parts = matcher.split("_");
+		String res = parts.length == 1? parts[0]:String.join("_",Arrays.asList(parts).subList(1, parts.length)),cla;
+		OWLClass cl = null;
+		if(parts[0].equals("cpu")) {
+			cla = "CPU";
+		}else if(parts[0].equals("software")) {
+			cla = "Software";
+		}else if(parts[0].equals("memory")) {
+			cla = "Memory";
+		}else if(parts[0].equals("operating-system")) {
+			cla = "OperatingSystem";
+		}else if(parts[0].equals("computer")) {
+			cla = "Computer";
+		}else if(parts[0].equals("multicomputer")) {
+			cla = "Multicomputer";
+		}else if(parts[0].equals("gpu")) {
+			cla = "GPU";
+		}else {
+			if(res.equals("interconnection-network")) {
+				cla = "What";
+			}else if(res.equals("programming-language")) {
+				cla = "What";
+			}else if(res.equals("num-processors")) {
+				cla = "GPU";
+			}else if(res.equals("num-nodes")) {
+				cla = "GPU";
+			}else {
+				throw new Exception("UH OH");
+			}
+		}
+		cl = ontology.getDataFactory().getOWLClass(IRI.create(ontology.getOntology().getOntologyID().getOntologyIRI().get()+"#"+cla));
+		return new Duple<OWLClass,String>(cl,res);
 	}
 
 	private void loadStats() {

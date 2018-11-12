@@ -12,11 +12,10 @@ public class ClassNameEval {
 		Ontology onto = fileOnt.getOntology();
 		OntologyParser parser = new OntologyParser(onto);
 		
-		List<List<String>> s;
-		do {
-			s = parser.getStringsFromOneClass();
+		List<List<String>> s = parser.getStringsFromOneClass();
+		for( ; s != null; s = parser.getStringsFromOneClass()) {
 			System.out.println(s.toString());
-		}while(s != null);
+		}
 			
 		
 	}
