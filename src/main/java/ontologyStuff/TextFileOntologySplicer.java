@@ -153,11 +153,19 @@ public class TextFileOntologySplicer {
 				}
 			}
 		}
+<<<<<<< HEAD
 //		for(OWLClass classy : classes) {
 //			throw new Exception("FixMe");
 //		}
 		try {
 			ontology.getManager().saveOntology(ontology.getOntology(), IRI.create(ontology.getIRI().getIRIString().split(".owl")[0] + "_appended.owl"));
+=======
+		for(OWLClass classy : classes) {
+			throw new Exception("FixMe");
+		}
+		try {
+			ontology.getManager().saveOntology(ontology.getOntology());
+>>>>>>> refs/remotes/origin/master
 		} catch (OWLOntologyStorageException e) {e.printStackTrace();}
 	}
 
