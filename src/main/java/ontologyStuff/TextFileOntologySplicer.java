@@ -39,7 +39,7 @@ public class TextFileOntologySplicer {
 		}
 	}
 	
-	private class Assertion<OWLClass,OWLIndividual> extends Duple<OWLClass,OWLIndividual>{
+	private class Assertion<X,Y> extends Duple<OWLClass,OWLIndividual>{
 		public Assertion(OWLClass c,OWLIndividual i) {
 			super(c,i);
 			makeAssertion();
@@ -50,7 +50,7 @@ public class TextFileOntologySplicer {
 		}
 	}
 	
-	private class Property<OWLDataProperty,OWLIndividual,OWLLiteral> extends Triple<OWLDataProperty,OWLIndividual,OWLLiteral>{
+	private class Property<X,Y,Z> extends Triple<OWLDataProperty,OWLIndividual,OWLLiteral>{
 		public Property(OWLDataProperty d,OWLIndividual i1, OWLLiteral i2) {
 			super(d,i1,i2);
 			makeAssertion();
@@ -236,7 +236,6 @@ public class TextFileOntologySplicer {
 		
 		Duple<String,ArrayList<Duple<String,Integer>>> all = new Duple<String,ArrayList<Duple<String,Integer>>>();
 		Duple<String,ArrayList<Duple<String,Integer>>> typeCounts;
-		ArrayList<Duple<String,Integer>> counts;
 		Duple<String,Integer> add;
 		int index,allIndex;
 		all.x = "all";
