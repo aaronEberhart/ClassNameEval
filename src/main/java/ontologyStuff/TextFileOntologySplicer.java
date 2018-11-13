@@ -45,9 +45,7 @@ public class TextFileOntologySplicer {
 			makeAssertion();
 		}
 		private void makeAssertion() {
-			AddAxiom add = new AddAxiom(ontology.getOntology(),ontology.getDataFactory()
-					.getOWLClassAssertionAxiom(((OWLClassExpression)x),
-							((org.semanticweb.owlapi.model.OWLIndividual)y)));
+			AddAxiom add = new AddAxiom(ontology.getOntology(),ontology.getDataFactory().getOWLClassAssertionAxiom(((OWLClassExpression)x),((org.semanticweb.owlapi.model.OWLIndividual)y)));
 			ontology.getManager().applyChange(add);
 		}
 	}
@@ -58,8 +56,7 @@ public class TextFileOntologySplicer {
 			makeAssertion();
 		}
 		private void makeAssertion() {
-			AddAxiom add = new AddAxiom(ontology.getOntology(),ontology.getDataFactory()
-					.getOWLDataPropertyAssertionAxiom(((OWLDataPropertyExpression)x),((org.semanticweb.owlapi.model.OWLIndividual)y),(org.semanticweb.owlapi.model.OWLLiteral) z));
+			AddAxiom add = new AddAxiom(ontology.getOntology(),ontology.getDataFactory().getOWLDataPropertyAssertionAxiom(((OWLDataPropertyExpression)x),((org.semanticweb.owlapi.model.OWLIndividual)y),(org.semanticweb.owlapi.model.OWLLiteral) z));
 			ontology.getManager().applyChange(add);
 		}
 	}
@@ -72,7 +69,6 @@ public class TextFileOntologySplicer {
 		
 		addDataToOntology();
 	}
-
 
 	public TextFileOntologySplicer(String filename, Ontology o) throws Exception {
 		
@@ -134,6 +130,7 @@ public class TextFileOntologySplicer {
 	}
 	
 	private void addDataToOntology() throws Exception {
+		
 		List<OWLClass> classes = ontology.getClasses();
 		
 		int count;
@@ -143,30 +140,43 @@ public class TextFileOntologySplicer {
 		OWLDataProperty propIRI;
 		OWLIndividual indiv;
 		OWLLiteral literal;
+		
+		//look through all known classes
 		for(OWLClass classy : classes) {
+			
+			//and look through the data from the file
 			for(Duple<String,ArrayList<ArrayList<String[]>>> typeEntries : fileData) {
 				count = 1;
 				type = typeEntries.x.toUpperCase();
+				
+				//for every entry in the data
 				for(ArrayList<String[]> entry : typeEntries.y) {
+					
+					//assert a new individual of that entry type in the class
 					iri = classy.getIRI().getIRIString().split("#");
 					indiv = ontology.getDataFactory().getOWLNamedIndividual(IRI.create(String.format("%s#%s%02d%s",iri[0],type,count++,iri[1])));
 					new Assertion<OWLClass,OWLIndividual>(classy,indiv);
+					
+					//then look through the data entry
 					for(String[] property : entry) {
+					
+						//if there are any property assertions in the data 
+						//that match this class and individual
 						parts = matchClassType(property[0]);
 						if(parts.x.equals(classy)) {
-							String res = parts.y;
-							propIRI = ontology.getDataFactory().getOWLDataProperty(IRI.create(String.format("%s#%s",iri[0],res)));
+							
+							//add them to the ontology
+							propIRI = ontology.getDataFactory().getOWLDataProperty(IRI.create(String.format("%s#%s",iri[0],parts.y)));
 							literal = ontology.getDataFactory().getOWLLiteral(property[1]);	
 							new Property<OWLDataProperty,OWLIndividual,OWLLiteral>(propIRI,indiv,literal);
+							
 						}
 					}
 				}
 			}
 		}
-		try {
-			ontology.getManager().saveOntology(ontology.getOntology(), IRI.create(ontology.getIRI().getIRIString().split(".owl")[0] + "_appended.owl"));
-
-		} catch (OWLOntologyStorageException e) {e.printStackTrace();}
+		//save the ontology to a new file
+		ontology.getManager().saveOntology(ontology.getOntology(), IRI.create(ontology.getIRI().getIRIString().split(".owl")[0] + "_appended.owl"));
 	}
 	
 	public Duple<OWLClass,String> matchClassType(String matcher) throws Exception {
@@ -180,22 +190,39 @@ public class TextFileOntologySplicer {
 		}else if(parts[0].equals("memory")) {
 			cla = "Memory";
 		}else if(parts[0].equals("operating-system")) {
-			cla = "OperatingSystem";
+			if(res.equals("distribution_name") || res.equals("distribution_version")) {
+				cla = "Distribution";
+				if(res.equals("distribution_name"))res = "osDistributionName";
+				else res = "osDistributionVersion";
+			}
+			else {
+				cla = "Kernel";
+				if(res.equals("distribution_name"))res = "osKernelName";
+				else res = "osKernelVersion";
+			}
 		}else if(parts[0].equals("computer")) {
 			cla = "Computer";
 		}else if(parts[0].equals("multicomputer")) {
 			cla = "Multicomputer";
 		}else if(parts[0].equals("gpu")) {
-			cla = "GPU";
+			if(res.equals("kernel_version")){
+				cla = "Kernel";
+				res = "gpuKernelVersion";
+			}
+			else cla = "GPU";
 		}else {
 			if(res.equals("interconnection-network")) {
 				cla = "What";
+				//TODO
 			}else if(res.equals("programming-language")) {
 				cla = "What";
+				//TODO
 			}else if(res.equals("num-processors")) {
 				cla = "GPU";
+				//TODO
 			}else if(res.equals("num-nodes")) {
 				cla = "GPU";
+				//TODO
 			}else {
 				throw new Exception("UH OH");
 			}
