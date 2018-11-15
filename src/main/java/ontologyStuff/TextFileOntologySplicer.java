@@ -5,7 +5,7 @@ import java.util.*;
 
 import org.semanticweb.owlapi.model.*;
 
-import ontologyStuff.*;
+import util.*;
 
 public class TextFileOntologySplicer {
 	
@@ -14,30 +14,6 @@ public class TextFileOntologySplicer {
 	private ArrayList<Duple<String,ArrayList<ArrayList<String[]>>>> fileData;
 	private ArrayList<Duple<String,ArrayList<Duple<String,Integer>>>> stats;
 	private boolean doneStats = false;
-	
-	@SuppressWarnings("unused")
-	private class Duple<X,Y>{
-		public X x;
-		public Y y;
-		public Duple() {}
-		public Duple(X x, Y y) {
-			this.x = x;
-			this.y = y;
-		}
-	}
-	
-	@SuppressWarnings("unused")
-	private class Triple<X,Y,Z>{
-		public X x;
-		public Y y;
-		public Z z;
-		public Triple() {}
-		public Triple(X x, Y y, Z z) {
-			this.x = x;
-			this.y = y;
-			this.z = z;
-		}
-	}
 	
 	private class Assertion<OWLClass,OWLIndividual> extends Duple<OWLClass,OWLIndividual>{
 		public Assertion(OWLClass c,OWLIndividual i) {
