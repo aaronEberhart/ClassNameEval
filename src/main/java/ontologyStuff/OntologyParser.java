@@ -9,23 +9,14 @@ import java.util.stream.Collectors;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.*;
 
+import util.*;
+
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class OntologyParser{
 	
 	private Ontology ontology;
 	private Pair pairs;	
-	
-	@SuppressWarnings("unused")
-	private class Duple<X,Y>{
-		public X x;
-		public Y y;
-		public Duple() {}
-		public Duple(X x, Y y) {
-			this.x = x;
-			this.y = y;
-		}
-	}
-	
+		
 	private class Pair{
 		private List<OWLClass> classes;
 		private List<Duple<OWLClass,List<OWLNamedIndividual>>> individuals;

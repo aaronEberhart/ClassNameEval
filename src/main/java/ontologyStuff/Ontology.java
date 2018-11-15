@@ -7,6 +7,8 @@ import java.util.stream.*;
 import org.semanticweb.owlapi.apibinding.*;
 import org.semanticweb.owlapi.model.*;
 
+import util.*;
+
 public class Ontology {
 
 	private OWLOntologyManager manager;
