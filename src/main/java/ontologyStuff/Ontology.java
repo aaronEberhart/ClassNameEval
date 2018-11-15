@@ -89,6 +89,10 @@ public class Ontology {
 		return asList(this.ontology.axioms(AxiomType.SUBCLASS_OF));
 	}
 	
+	protected List<OWLDataPropertyAssertionAxiom> getDataPropertyAxioms(OWLIndividual individual){
+		return asList(this.ontology.dataPropertyAssertionAxioms(individual));
+	}
+	
 	protected List<OWLObjectPropertyAxiom> getAxiomsRelatedToObjProp(OWLObjectProperty op){
 		return asList(this.ontology.axioms(op));
 	}

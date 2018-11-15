@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import ontologyStuff.*;
+import util.*;
 
 public class ClassNameEval {
 	
@@ -12,11 +13,11 @@ public class ClassNameEval {
 		Ontology onto = fileOnt.getOntology();
 		OntologyParser parser = new OntologyParser(onto);
 		
-		List<List<String>> s = parser.getStringsFromOneClass();
-		for( ; s != null; s = parser.getStringsFromOneClass()) {
-			System.out.println(s.toString());
+		List<List<List<String>>> s = parser.getAllStringsFromClasses();
+		
+		for(List<List<String>> stringLists : s) {
+			System.out.println(Arrays.toString(stringLists.toArray()));
 		}
-			
 		
 	}
 	

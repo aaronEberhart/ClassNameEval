@@ -16,8 +16,6 @@ public class TextFileOntologySplicer {
 	private boolean doneStats = false;
 	
 	private class Assertion<X,Y> extends Duple<OWLClass,OWLIndividual>{
-
-
 		public Assertion(OWLClass c,OWLIndividual i) {
 			super(c,i);
 			makeAssertion();
@@ -46,6 +44,7 @@ public class TextFileOntologySplicer {
 		readFile(textFilename);
 		
 		addDataToOntology();
+		
 	}
 
 	public TextFileOntologySplicer(String filename, Ontology o) throws Exception {
@@ -55,6 +54,7 @@ public class TextFileOntologySplicer {
 		readFile(filename);
 		
 		addDataToOntology();
+		
 	}
 	
 	private void readFile(String filename) {
@@ -145,7 +145,14 @@ public class TextFileOntologySplicer {
 							
 							//add them to the ontology
 							propIRI = ontology.getDataFactory().getOWLDataProperty(IRI.create(String.format("%s#%s",iri[0],parts.y)));
-							literal = ontology.getDataFactory().getOWLLiteral(property[1]);	
+							
+							if(Util.isInteger(property[1]))
+								literal = ontology.getDataFactory().getOWLLiteral(Integer.parseInt(property[1]));
+							else if(Util.isDouble(property[1]))
+								literal = ontology.getDataFactory().getOWLLiteral(Double.parseDouble(property[1]));
+							else
+								literal = ontology.getDataFactory().getOWLLiteral(property[1]);
+							
 							new Property<OWLDataProperty,OWLIndividual,OWLLiteral>(propIRI,indiv,literal);
 							
 						}
@@ -190,17 +197,14 @@ public class TextFileOntologySplicer {
 			else cla = "GPU";
 		}else {
 			if(res.equals("interconnection-network")) {
-				cla = "What";
-				//TODO
+				cla = "Multicomputer";
 			}else if(res.equals("programming-language")) {
 				cla = "What";
 				//TODO
 			}else if(res.equals("num-processors")) {
-				cla = "GPU";
-				//TODO
+				cla = "Multicomputer";
 			}else if(res.equals("num-nodes")) {
-				cla = "GPU";
-				//TODO
+				cla = "Multicomputer";
 			}else {
 				throw new Exception("UH OH");
 			}
