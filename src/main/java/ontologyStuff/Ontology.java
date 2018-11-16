@@ -7,6 +7,8 @@ import java.util.stream.*;
 import org.semanticweb.owlapi.apibinding.*;
 import org.semanticweb.owlapi.model.*;
 
+import util.*;
+
 public class Ontology {
 
 	private OWLOntologyManager manager;
@@ -85,6 +87,10 @@ public class Ontology {
 	
 	protected List<OWLSubClassOfAxiom> getSubClassAxioms(){
 		return asList(this.ontology.axioms(AxiomType.SUBCLASS_OF));
+	}
+	
+	protected List<OWLDataPropertyAssertionAxiom> getDataPropertyAxioms(OWLIndividual individual){
+		return asList(this.ontology.dataPropertyAssertionAxioms(individual));
 	}
 	
 	protected List<OWLObjectPropertyAxiom> getAxiomsRelatedToObjProp(OWLObjectProperty op){

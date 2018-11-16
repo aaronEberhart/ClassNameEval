@@ -1,42 +1,33 @@
 package ontologyStuff;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.util.*;
 
+import util.*;
+
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class OntologyParser{
 	
 	private Ontology ontology;
-	private Pair pairs;	
-	
-	@SuppressWarnings("unused")
-	private class Duple<X,Y>{
-		public X x;
-		public Y y;
-		public Duple() {}
-		public Duple(X x, Y y) {
-			this.x = x;
-			this.y = y;
-		}
-	}
-	
-	private class Pair{
+	private Threeple pairs;	
+		
+	private class Threeple{
+		private int index;
 		private List<OWLClass> classes;
 		private List<Duple<OWLClass,List<OWLNamedIndividual>>> individuals;
-		private List<Duple<OWLClass,List<OWLDataProperty>>> property;
-		
-		public Pair(List<OWLClass> c,List<OWLNamedIndividual> in, List<OWLDataProperty> dp) {
+		private List<Duple<OWLClass,List<OWLDataPropertyAxiom>>> properties;
+	
+		public Threeple(List<OWLClass> c,List<OWLNamedIndividual> in) {
 			classes = c;
-			matchAxioms(in,dp);
+			index = -1;
+			matchClassIndividuals(in);
 		}
 		
-		private void matchAxioms(List<OWLNamedIndividual> in, List<OWLDataProperty> dp) {
+		private void matchClassIndividuals(List<OWLNamedIndividual> in) {
 			individuals = new ArrayList<Duple<OWLClass,List<OWLNamedIndividual>>>();
 			Duple<OWLClass,List<OWLNamedIndividual>> type;
 			List<OWLNamedIndividual> temp;
@@ -57,11 +48,15 @@ public class OntologyParser{
 			}
 		}		
 		
-		private List popClass(char opt) {
-			if(classes.isEmpty())
+		private List popClass() {
+			if(index == pairs.classes.size()) {
+				index = -1;
 				return null;
-			OWLClass cl = classes.get(0);
-			classes.remove(0);
+			}
+			else if(index == -1)
+				index = 0;
+			
+			OWLClass cl = classes.get(index);
 			
 			if(individuals == null) {
 				individuals = new ArrayList<Duple<OWLClass,List<OWLNamedIndividual>>>();
@@ -71,8 +66,8 @@ public class OntologyParser{
 				type.y = temp;
 				individuals.add(type);
 			}
-			List<OWLNamedIndividual> ax = individuals.get(0).y;
-			if(!ax.isEmpty())individuals.remove(0);
+			List<OWLNamedIndividual> ax = individuals.get(index++).y;
+			//if(!ax.isEmpty())individuals.add(individuals.remove(0));
 						
 			List ret = new ArrayList();
 			ret.add(cl);
@@ -80,6 +75,8 @@ public class OntologyParser{
 			
 			return ret;
 		}
+		
+
 	}
 	
 	public OntologyParser(Ontology o) {
@@ -92,18 +89,26 @@ public class OntologyParser{
 	
 	public void switchOntologyFile(Ontology o) {
 		ontology = o;
-		pairs = new Pair(ontology.getClasses(),ontology.getIndividuals(),ontology.getDataProperties());
+		pairs = new Threeple(ontology.getClasses(),ontology.getIndividuals());
 	}
 	
 	public void switchOntologyFile(String filename) {
 		ontology = new Ontology(filename);
-		pairs = new Pair(ontology.getClasses(),ontology.getIndividuals(),ontology.getDataProperties());
+		pairs = new Threeple(ontology.getClasses(),ontology.getIndividuals());
 	}
 	
-	
+	public List<List<List<String>>> getAllStringsFromClasses() {
+		List<List<List<String>>> ret = new ArrayList<List<List<String>>>();
+		List<List<String>> s = getStringsFromOneClass();
+		
+		
+		for(; s != null; s = getStringsFromOneClass()) {ret.add(s);}
+		
+		return ret;
+	}
 
-	public List<List<String>> getStringsFromOneClass(char opt) {
-		List list = pairs.popClass(opt);
+	private List<List<String>> getStringsFromOneClass() {
+		List list = pairs.popClass();
 		if(list == null) return null;
 		
 		OWLClass cl = (OWLClass)list.get(0);
