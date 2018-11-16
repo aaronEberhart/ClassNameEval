@@ -173,6 +173,7 @@ public class TextFileOntologySplicer {
 		}else if(parts[0].equals("software")) {
 			cla = "Software";
 		}else if(parts[0].equals("memory")) {
+			//TODO add code to organize subclasses
 			cla = "Memory";
 		}else if(parts[0].equals("operating-system")) {
 			if(res.equals("distribution_name") || res.equals("distribution_version")) {
@@ -199,8 +200,7 @@ public class TextFileOntologySplicer {
 			if(res.equals("interconnection-network")) {
 				cla = "Multicomputer";
 			}else if(res.equals("programming-language")) {
-				cla = "What";
-				//TODO
+				cla = "ProgrammingLanguage";
 			}else if(res.equals("num-processors")) {
 				cla = "Multicomputer";
 			}else if(res.equals("num-nodes")) {
