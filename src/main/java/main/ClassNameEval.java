@@ -12,8 +12,9 @@ public class ClassNameEval {
 		Ontology onto = fileOnt.getOntology();
 		OntologyParser parser = new OntologyParser(onto);
 		
-		List<List<String>> s = parser.getStringsFromOneClass();
-		for( ; s != null; s = parser.getStringsFromOneClass()) {
+		char opt = 'l';
+		List<List<String>> s = parser.getStringsFromOneClass(opt);
+		for( ; s != null; s = parser.getStringsFromOneClass(opt)) {
 			System.out.println(s.toString());
 		}
 			

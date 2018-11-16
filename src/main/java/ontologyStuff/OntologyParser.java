@@ -29,17 +29,17 @@ public class OntologyParser{
 	private class Pair{
 		private List<OWLClass> classes;
 		private List<Duple<OWLClass,List<OWLNamedIndividual>>> individuals;
+		private List<Duple<OWLClass,List<OWLDataProperty>>> property;
 		
-		public Pair(List<OWLClass> c,List<OWLNamedIndividual> in) {
+		public Pair(List<OWLClass> c,List<OWLNamedIndividual> in, List<OWLDataProperty> dp) {
 			classes = c;
-			matchAxioms(in);
+			matchAxioms(in,dp);
 		}
 		
-		private void matchAxioms(List<OWLNamedIndividual> in) {
+		private void matchAxioms(List<OWLNamedIndividual> in, List<OWLDataProperty> dp) {
 			individuals = new ArrayList<Duple<OWLClass,List<OWLNamedIndividual>>>();
 			Duple<OWLClass,List<OWLNamedIndividual>> type;
 			List<OWLNamedIndividual> temp;
-			
 			for(OWLClass cla : classes) {
 				type = new Duple<OWLClass,List<OWLNamedIndividual>>();
 				temp = new ArrayList<OWLNamedIndividual>();
@@ -57,7 +57,7 @@ public class OntologyParser{
 			}
 		}		
 		
-		private List popClass() {
+		private List popClass(char opt) {
 			if(classes.isEmpty())
 				return null;
 			OWLClass cl = classes.get(0);
@@ -92,18 +92,18 @@ public class OntologyParser{
 	
 	public void switchOntologyFile(Ontology o) {
 		ontology = o;
-		pairs = new Pair(ontology.getClasses(),ontology.getIndividuals());
+		pairs = new Pair(ontology.getClasses(),ontology.getIndividuals(),ontology.getDataProperties());
 	}
 	
 	public void switchOntologyFile(String filename) {
 		ontology = new Ontology(filename);
-		pairs = new Pair(ontology.getClasses(),ontology.getIndividuals());
+		pairs = new Pair(ontology.getClasses(),ontology.getIndividuals(),ontology.getDataProperties());
 	}
 	
 	
 
-	public List<List<String>> getStringsFromOneClass() {
-		List list = pairs.popClass();
+	public List<List<String>> getStringsFromOneClass(char opt) {
+		List list = pairs.popClass(opt);
 		if(list == null) return null;
 		
 		OWLClass cl = (OWLClass)list.get(0);
