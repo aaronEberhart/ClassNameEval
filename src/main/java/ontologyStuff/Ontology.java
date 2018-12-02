@@ -95,6 +95,7 @@ public class Ontology {
 	}
 	
 	protected List<OWLDataPropertyAxiom> getAxiomsRelatedToDataProp(OWLDataProperty dp){
+		
 		return asList(this.ontology.axioms(dp));
 	}
 	

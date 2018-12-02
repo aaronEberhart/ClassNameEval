@@ -19,7 +19,6 @@ public class OntologyParser{
 		private List<OWLClass> classes;
 		private List<Duple<OWLClass,List<OWLNamedIndividual>>> individuals;
 		//private List<Duple<OWLClass,List<OWLDataPropertyAxiom>>> properties;
-		
 		public Threeple(List<OWLClass> c,List<OWLNamedIndividual> in) {
 			classes = c;
 			index = -1;
@@ -30,7 +29,6 @@ public class OntologyParser{
 			individuals = new ArrayList<Duple<OWLClass,List<OWLNamedIndividual>>>();
 			Duple<OWLClass,List<OWLNamedIndividual>> type;
 			List<OWLNamedIndividual> temp;
-			
 			for(OWLClass cla : classes) {
 				type = new Duple<OWLClass,List<OWLNamedIndividual>>();
 				temp = new ArrayList<OWLNamedIndividual>();

@@ -252,8 +252,7 @@ public class TextFileOntologySplicer {
 			if(res.equals("interconnection-network")) {
 				cla = "Multicomputer";
 			}else if(res.equals("programming-language")) {
-				cla = "What";
-				//TODO
+				cla = "ProgrammingLanguage";
 			}else if(res.equals("num-processors")) {
 				cla = "Multicomputer";
 			}else if(res.equals("num-nodes")) {
