@@ -7,8 +7,6 @@ import java.util.stream.*;
 import org.semanticweb.owlapi.apibinding.*;
 import org.semanticweb.owlapi.model.*;
 
-import util.*;
-
 public class Ontology {
 
 	private OWLOntologyManager manager;
@@ -81,8 +79,7 @@ public class Ontology {
 	}
 	
 	protected List<OWLNamedIndividual> getIndividuals(){
-		List<OWLNamedIndividual> list = asList(this.ontology.individualsInSignature());
-		return list;
+		return asList(this.ontology.individualsInSignature());
 	}
 	
 	protected List<OWLSubClassOfAxiom> getSubClassAxioms(){

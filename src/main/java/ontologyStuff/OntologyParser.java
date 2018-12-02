@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.util.*;
 
 import util.*;
 
@@ -19,7 +18,7 @@ public class OntologyParser{
 		private int index;
 		private List<OWLClass> classes;
 		private List<Duple<OWLClass,List<OWLNamedIndividual>>> individuals;
-		private List<Duple<OWLClass,List<OWLDataPropertyAxiom>>> properties;
+		//private List<Duple<OWLClass,List<OWLDataPropertyAxiom>>> properties;
 		
 		public Threeple(List<OWLClass> c,List<OWLNamedIndividual> in) {
 			classes = c;

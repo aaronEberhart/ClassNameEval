@@ -1,10 +1,8 @@
 package main;
 
-import java.io.*;
 import java.util.*;
 
 import ontologyStuff.*;
-import util.*;
 
 public class ClassNameEval {
 	

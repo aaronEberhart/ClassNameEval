@@ -119,6 +119,7 @@ public class TextFileOntologySplicer {
 		OWLIndividual indiv;
 		OWLLiteral literal;
 		
+		
 		//look through all known classes
 		for(OWLClass classy : classes) {
 			
@@ -135,13 +136,62 @@ public class TextFileOntologySplicer {
 					indiv = ontology.getDataFactory().getOWLNamedIndividual(IRI.create(String.format("%s#%s%02d%s",iri[0],type,count++,iri[1])));
 					new Assertion<OWLClass,OWLIndividual>(classy,indiv);
 					
-					//then look through the data entry
-					for(String[] property : entry) {
+					OWLClass mem = ontology.getDataFactory().getOWLClass(IRI.create(String.format("%s#%s",iri[0],"Memory")));
 					
+					//then look through the data entry
+					for(int i = 0; i < entry.size(); i++) {
+						
+						String[] property = entry.get(i);
+						
 						//if there are any property assertions in the data 
 						//that match this class and individual
-						parts = matchClassType(property[0]);
-						if(parts.x.equals(classy)) {
+						String[] matcher = property[0].split("_");
+						String res = matcher.length == 1 ? matcher[0]:String.join("_",Arrays.asList(matcher).subList(1, matcher.length));
+						//System.out.println(Arrays.toString(matcher)+"\t"+res);
+						parts = matchClassType(matcher,res,property[1].trim());
+						
+						if(matcher[0].equals("memory") && res.equals("type") && mem.equals(classy)) {
+							propIRI = ontology.getDataFactory().getOWLDataProperty(IRI.create(String.format("%s#type",iri[0])));
+							literal = ontology.getDataFactory().getOWLLiteral(property[1]);
+							
+							new Property<OWLDataProperty,OWLIndividual,OWLLiteral>(propIRI,indiv,literal);
+						}
+						else if(matcher[0].equals("memory") && res.equals("type") && parts.x.equals(classy)){
+							
+							property = entry.get(++i);
+							matcher = property[0].split("_");
+							res = matcher.length == 1 ? matcher[0]:String.join("_",Arrays.asList(matcher).subList(1, matcher.length));
+							parts = matchClassType(matcher,res,property[1].trim());
+							
+							//add the type to the ontology
+							propIRI = ontology.getDataFactory().getOWLDataProperty(IRI.create(String.format("%s#%s",iri[0],parts.y)));
+							
+							if(Util.isInteger(property[1]))
+								literal = ontology.getDataFactory().getOWLLiteral(Integer.parseInt(property[1]));
+							else if(Util.isDouble(property[1]))
+								literal = ontology.getDataFactory().getOWLLiteral(Double.parseDouble(property[1]));
+							else
+								literal = ontology.getDataFactory().getOWLLiteral(property[1]);
+							
+							new Property<OWLDataProperty,OWLIndividual,OWLLiteral>(propIRI,indiv,literal);//add them to the ontology
+							
+							property = entry.get(++i);
+							matcher = property[0].split("_");
+							res = matcher.length == 1 ? matcher[0]:String.join("_",Arrays.asList(matcher).subList(1, matcher.length));
+							parts = matchClassType(matcher,res,property[1].trim());
+							
+							propIRI = ontology.getDataFactory().getOWLDataProperty(IRI.create(String.format("%s#%s",iri[0],parts.y)));
+							
+							if(Util.isInteger(property[1]))
+								literal = ontology.getDataFactory().getOWLLiteral(Integer.parseInt(property[1]));
+							else if(Util.isDouble(property[1]))
+								literal = ontology.getDataFactory().getOWLLiteral(Double.parseDouble(property[1]));
+							else
+								literal = ontology.getDataFactory().getOWLLiteral(property[1]);
+							
+							new Property<OWLDataProperty,OWLIndividual,OWLLiteral>(propIRI,indiv,literal);//add them to the ontology
+						}						
+						else if(parts.x.equals(classy) && !mem.equals(classy)) {
 							
 							//add them to the ontology
 							propIRI = ontology.getDataFactory().getOWLDataProperty(IRI.create(String.format("%s#%s",iri[0],parts.y)));
@@ -164,16 +214,19 @@ public class TextFileOntologySplicer {
 		ontology.getManager().saveOntology(ontology.getOntology(), IRI.create(ontology.getIRI().getIRIString().split(".owl")[0] + "_appended.owl"));
 	}
 	
-	public Duple<OWLClass,String> matchClassType(String matcher) throws Exception {
-		String[] parts = matcher.split("_");
-		String res = parts.length == 1? parts[0]:String.join("_",Arrays.asList(parts).subList(1, parts.length)),cla;
+	public Duple<OWLClass,String> matchClassType(String[] parts, String res,String val) throws Exception {
+
+		String cla;
 		OWLClass cl = null;
 		if(parts[0].equals("cpu")) {
 			cla = "CPU";
 		}else if(parts[0].equals("software")) {
 			cla = "Software";
 		}else if(parts[0].equals("memory")) {
-			cla = "Memory";
+			if(parts[1].equals("type")) {
+				cla = findMemType(val);
+			}
+			else cla = "Memory";
 		}else if(parts[0].equals("operating-system")) {
 			if(res.equals("distribution_name") || res.equals("distribution_version")) {
 				cla = "Distribution";
@@ -211,6 +264,17 @@ public class TextFileOntologySplicer {
 		}
 		cl = ontology.getDataFactory().getOWLClass(IRI.create(ontology.getOntology().getOntologyID().getOntologyIRI().get()+"#"+cla));
 		return new Duple<OWLClass,String>(cl,res);
+	}
+
+	private String findMemType(String res) {
+		if(res.equals("RAM") || res.equals("random access memory (RAM)"))return "RAM";
+		if(res.equals("heap"))return "Memory";
+		if(res.equals("DDRII")|| res.equals("DDR2 RAM")|| res.equals("DDRII RAM"))return "DDRII";
+		if(res.equals("DDRIII") || res.equals("DDRIII-1333 RAM") || res.equals("DDR3") || res.equals("DDR3-SDRAM"))return "DDRIII";
+		if(res.equals("cache") || res.equals("L2 cache")|| res.equals("L2 shared cache")|| res.equals("Third level cache"))return "Cache";
+		if(res.equals("GPU"))return "GPU";
+		if(res.equals("Hard drive"))return "Disk";
+		return res;
 	}
 
 	private void loadStats() {
