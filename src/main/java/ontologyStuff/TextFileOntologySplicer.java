@@ -134,7 +134,7 @@ public class TextFileOntologySplicer {
 					//assert a new individual of that entry type in the class
 					iri = classy.getIRI().getIRIString().split("#");
 					indiv = ontology.getDataFactory().getOWLNamedIndividual(IRI.create(String.format("%s#%s%02d%s",iri[0],type,count++,iri[1])));
-					new Assertion<OWLClass,OWLIndividual>(classy,indiv);
+					
 					
 					OWLClass mem = ontology.getDataFactory().getOWLClass(IRI.create(String.format("%s#%s",iri[0],"Memory")));
 					
@@ -153,10 +153,12 @@ public class TextFileOntologySplicer {
 						if(matcher[0].equals("memory") && res.equals("type") && mem.equals(classy)) {
 							propIRI = ontology.getDataFactory().getOWLDataProperty(IRI.create(String.format("%s#type",iri[0])));
 							literal = ontology.getDataFactory().getOWLLiteral(property[1]);
-							
+							new Assertion<OWLClass,OWLIndividual>(classy,indiv);
 							new Property<OWLDataProperty,OWLIndividual,OWLLiteral>(propIRI,indiv,literal);
 						}
 						else if(matcher[0].equals("memory") && res.equals("type") && parts.x.equals(classy)){
+							
+							new Assertion<OWLClass,OWLIndividual>(classy,indiv);
 							
 							property = entry.get(++i);
 							matcher = property[0].split("_");
@@ -203,6 +205,7 @@ public class TextFileOntologySplicer {
 							else
 								literal = ontology.getDataFactory().getOWLLiteral(property[1]);
 							
+							new Assertion<OWLClass,OWLIndividual>(classy,indiv);
 							new Property<OWLDataProperty,OWLIndividual,OWLLiteral>(propIRI,indiv,literal);
 							
 						}
