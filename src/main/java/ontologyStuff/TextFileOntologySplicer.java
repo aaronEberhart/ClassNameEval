@@ -118,7 +118,7 @@ public class TextFileOntologySplicer {
 		OWLDataProperty propIRI;
 		OWLIndividual indiv;
 		OWLLiteral literal;
-		
+		OWLClass mem = ontology.getDataFactory().getOWLClass(IRI.create(String.format("%s#%s",classes.get(0).getIRI().getIRIString().split("#"),"Memory")));
 		
 		//look through all known classes
 		for(OWLClass classy : classes) {
@@ -131,13 +131,10 @@ public class TextFileOntologySplicer {
 				//for every entry in the data
 				for(ArrayList<String[]> entry : typeEntries.y) {
 					
-					//assert a new individual of that entry type in the class
+					//define a new individual of that entry type in the class
 					iri = classy.getIRI().getIRIString().split("#");
 					indiv = ontology.getDataFactory().getOWLNamedIndividual(IRI.create(String.format("%s#%s%02d%s",iri[0],type,count++,iri[1])));
-					
-					
-					OWLClass mem = ontology.getDataFactory().getOWLClass(IRI.create(String.format("%s#%s",iri[0],"Memory")));
-					
+															
 					//then look through the data entry
 					for(int i = 0; i < entry.size(); i++) {
 						
@@ -147,15 +144,16 @@ public class TextFileOntologySplicer {
 						//that match this class and individual
 						String[] matcher = property[0].split("_");
 						String res = matcher.length == 1 ? matcher[0]:String.join("_",Arrays.asList(matcher).subList(1, matcher.length));
-						//System.out.println(Arrays.toString(matcher)+"\t"+res);
 						parts = matchClassType(matcher,res,property[1].trim());
 						
+						//assert an individual and property if there is memory_type data
 						if(matcher[0].equals("memory") && res.equals("type") && mem.equals(classy)) {
 							propIRI = ontology.getDataFactory().getOWLDataProperty(IRI.create(String.format("%s#type",iri[0])));
 							literal = ontology.getDataFactory().getOWLLiteral(property[1]);
 							new Assertion<OWLClass,OWLIndividual>(classy,indiv);
 							new Property<OWLDataProperty,OWLIndividual,OWLLiteral>(propIRI,indiv,literal);
 						}
+						//assert the memory_type data when the class is that type
 						else if(matcher[0].equals("memory") && res.equals("type") && parts.x.equals(classy)){
 							
 							new Assertion<OWLClass,OWLIndividual>(classy,indiv);
@@ -192,10 +190,10 @@ public class TextFileOntologySplicer {
 								literal = ontology.getDataFactory().getOWLLiteral(property[1]);
 							
 							new Property<OWLDataProperty,OWLIndividual,OWLLiteral>(propIRI,indiv,literal);//add them to the ontology
-						}						
+						}
+						//otherwise assert individuals and properties for their indicated classes
 						else if(parts.x.equals(classy) && !mem.equals(classy)) {
 							
-							//add them to the ontology
 							propIRI = ontology.getDataFactory().getOWLDataProperty(IRI.create(String.format("%s#%s",iri[0],parts.y)));
 							
 							if(Util.isInteger(property[1]))
