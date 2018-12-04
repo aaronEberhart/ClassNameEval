@@ -233,7 +233,7 @@ public class TextFileOntologySplicer {
 			}
 			else {
 				if(res.equals("kernel_name")) {cla = "Kernel";res = "name";}
-				else {cla = "Distribution";res = "kernel_version";}
+				else {cla = "Distribution";res = "os_kernel_version";}
 			}
 		}else if(parts[0].equals("computer")) {
 			cla = "Computer";
