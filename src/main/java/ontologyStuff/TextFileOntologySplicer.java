@@ -233,13 +233,13 @@ public class TextFileOntologySplicer {
 		}else if(parts[0].equals("operating-system")) {
 			if(res.equals("distribution_name") || res.equals("distribution_version")) {
 				cla = "Distribution";
-				if(res.equals("distribution_name"))res = "os_distribution_name";
-				else res = "os_distribution_version";
+				if(res.equals("distribution_name"))res = "name";
+				else res = "version";
 			}
 			else {
 				cla = "Kernel";
-				if(res.equals("distribution_name"))res = "os_kernel_name";
-				else res = "os_kernel_version";
+				if(res.equals("kernel_name"))res = "os_name";
+				else res = "os_version";
 			}
 		}else if(parts[0].equals("computer")) {
 			cla = "Computer";
@@ -248,7 +248,7 @@ public class TextFileOntologySplicer {
 		}else if(parts[0].equals("gpu")) {
 			if(res.equals("kernel_version")){
 				cla = "Kernel";
-				res = "gpu_kernel_version";
+				res = "gpu_version";
 			}
 			else cla = "GPU";
 		}else {
