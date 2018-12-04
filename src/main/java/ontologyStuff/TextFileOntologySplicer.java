@@ -224,18 +224,14 @@ public class TextFileOntologySplicer {
 		}else if(parts[0].equals("software")) {
 			cla = "Software";
 		}else if(parts[0].equals("memory")) {
-			if(parts[1].equals("type")) {
-				cla = findMemType(val);
-			}
+			if(parts[1].equals("type")) {cla = findMemType(val);}
 			else cla = "Memory";
 		}else if(parts[0].equals("operating-system")) {
 			if(res.equals("distribution_name") || res.equals("distribution_version")) {
-				
 				if(res.equals("distribution_name")) {cla = "OperatingSystem";res = "name";}
 				else {cla = "Distribution"; res = "os_version";}
 			}
 			else {
-				
 				if(res.equals("kernel_name")) {cla = "Kernel";res = "name";}
 				else {cla = "Distribution";res = "kernel_version";}
 			}
@@ -244,10 +240,7 @@ public class TextFileOntologySplicer {
 		}else if(parts[0].equals("multicomputer")) {
 			cla = "Multicomputer";
 		}else if(parts[0].equals("gpu")) {
-			if(res.equals("kernel_version")){
-				cla = "Distribution";
-				res = "gpu_kernel_version";
-			}
+			if(res.equals("kernel_version")){cla = "Distribution";res = "gpu_kernel_version";}
 			else cla = "GPU";
 		}else {
 			if(res.equals("interconnection-network")) {
