@@ -232,15 +232,16 @@ public class TextFileOntologySplicer {
 				else {cla = "Distribution"; res = "os_version";}
 			}
 			else {
-				if(res.equals("kernel_name")) {cla = "Kernel";res = "name";}
-				else {cla = "Distribution";res = "os_kernel_version";}
+				cla = "Kernel";
+				if(res.equals("kernel_name")) res = "name";
+				else res = "os_version";
 			}
 		}else if(parts[0].equals("computer")) {
 			cla = "Computer";
 		}else if(parts[0].equals("multicomputer")) {
 			cla = "Multicomputer";
 		}else if(parts[0].equals("gpu")) {
-			if(res.equals("kernel_version")){cla = "Distribution";res = "gpu_kernel_version";}
+			if(res.equals("kernel_version")){cla = "Kernel";res = "gpu_version";}
 			else cla = "GPU";
 		}else {
 			if(res.equals("interconnection-network")) {
