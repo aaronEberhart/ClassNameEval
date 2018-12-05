@@ -135,7 +135,6 @@ public class TextFileOntologySplicer {
 					iri = classy.getIRI().getIRIString().split("#");
 					indiv = ontology.getDataFactory().getOWLNamedIndividual(IRI.create(String.format("%s#%s%02d%s",iri[0],type,count++,iri[1])));
 					
-					
 					OWLClass mem = ontology.getDataFactory().getOWLClass(IRI.create(String.format("%s#%s",iri[0],"Memory")));
 					
 					//then look through the data entry
